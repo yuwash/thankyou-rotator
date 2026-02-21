@@ -13,11 +13,9 @@ const HUE_ROTATION_STEP = 360.0 / NUM_FRAMES;
 const TEXT_ROTATION_RANGE = 50.0;
 const TEXT_ROTATION_STEP = (TEXT_ROTATION_RANGE * 2) / NUM_FRAMES;
 
-// Dynamic Font Size
-const FONT_MIN = 144;
-const FONT_MAX = 180;
-const FONT_RANGE = (FONT_MAX - FONT_MIN) / 2;
-const FONT_MID = FONT_MIN + FONT_RANGE;
+// Dynamic Font Size - default values
+const DEFAULT_FONT_MAX = 180;
+const FONT_MIN_RATIO = 0.8;
 
 // Base SVG template
 const BASE_SVG_TEMPLATE = `<?xml version="1.0" encoding="UTF-8"?>
@@ -59,16 +57,20 @@ const BASE_SVG_TEMPLATE = `<?xml version="1.0" encoding="UTF-8"?>
  * Generate an SVG string for a specific frame
  * @param {number} frameIndex - Frame number (0 to NUM_FRAMES-1)
  * @param {string} text - Text to display (default: "TY")
+ * @param {number} fontMax - Maximum font size (default: DEFAULT_FONT_MAX)
  * @returns {string} SVG string for the frame
  */
-export function generateFrameSVG(frameIndex, text = "TY") {
+export function generateFrameSVG(frameIndex, text = "TY", fontMax = DEFAULT_FONT_MAX) {
     // Calculate angles for this frame
     const patternAngle = frameIndex * PATTERN_ROTATION_STEP;
     const hueAngle = frameIndex * HUE_ROTATION_STEP;
     const textAngle = 25.0 * Math.sin((2 * Math.PI * frameIndex) / NUM_FRAMES - (Math.PI / 2));
 
-    // Calculate dynamic font size
-    const fontSize = FONT_MID + FONT_RANGE * Math.cos((4 * Math.PI * frameIndex) / NUM_FRAMES + Math.PI);
+    // Calculate dynamic font size based on provided max
+    const fontMin = fontMax * FONT_MIN_RATIO;
+    const fontRange = (fontMax - fontMin) / 2;
+    const fontMid = fontMin + fontRange;
+    const fontSize = fontMid + fontRange * Math.cos((4 * Math.PI * frameIndex) / NUM_FRAMES + Math.PI);
 
     // Calculate dynamic Y-offset for vertical centering
     const yVisualCenter = 120 + (fontSize * 0.11);

@@ -3,11 +3,13 @@ import { generateFrameSVG, getNumFrames } from './rotator.js';
 
 let currentFrame = 0;
 let currentText = "TY";
+let currentFontMax = 180;
 
 // Get DOM elements
 const canvas = document.getElementById('frame-canvas');
 const ctx = canvas.getContext('2d');
-const textInput = document.querySelector('.input');
+const textInput = document.getElementById('text-input');
+const fontSizeInput = document.getElementById('font-size-input');
 const prevButton = document.querySelectorAll('.button.is-primary')[0];
 const nextButton = document.querySelectorAll('.button.is-primary')[1];
 const frameDisplay = document.querySelector('.button.is-static');
@@ -17,7 +19,7 @@ const frameDisplay = document.querySelector('.button.is-static');
  */
 async function renderFrame() {
     // Generate SVG for the current frame
-    const svgString = generateFrameSVG(currentFrame, currentText);
+    const svgString = generateFrameSVG(currentFrame, currentText, currentFontMax);
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -54,10 +56,22 @@ function updateText() {
     renderFrame();
 }
 
+/**
+ * Update font size from input
+ */
+function updateFontSize() {
+    const value = parseInt(fontSizeInput.value, 10);
+    if (value > 0) {
+        currentFontMax = value;
+        renderFrame();
+    }
+}
+
 // Set up event listeners
 prevButton.addEventListener('click', previousFrame);
 nextButton.addEventListener('click', nextFrame);
 textInput.addEventListener('input', updateText);
+fontSizeInput.addEventListener('input', updateFontSize);
 
 // Render the initial frame
 renderFrame();
