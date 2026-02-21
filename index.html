@@ -38,6 +38,18 @@
     <div class="canvas-container">
       <canvas id="frame-canvas" width="500" height="500"></canvas>
     </div>
+
+    <div class="field">
+      <div class="control">
+        <label class="label">Animation Duration (ms)</label>
+        <input class="input" id="animation-duration-input" type="number" placeholder="Animation duration" value="2000" min="100" step="100">
+      </div>
+      <div class="control" style="align-self: flex-end;">
+        <button class="button is-success" id="render-gif-button">Render GIF</button>
+      </div>
+    </div>
+
+    <div id="gif-output"></div>
   </div>
   <script type="module" src="/app.js"></script>
 </body>
