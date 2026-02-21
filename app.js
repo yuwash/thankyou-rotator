@@ -5,6 +5,8 @@ import { generateFrameSVG, getNumFrames } from './rotator.js';
 let currentFrame = 0;
 let currentText = "TY";
 let currentFontMax = 180;
+let currentStartHueAngle = 120.0;
+let currentMaxHueDelta = 360.0;
 let gifBlobUrl = null; // Track the generated GIF URL
 
 // Get DOM elements
@@ -12,6 +14,10 @@ const canvas = document.getElementById('frame-canvas');
 const ctx = canvas.getContext('2d');
 const textInput = document.getElementById('text-input');
 const fontSizeInput = document.getElementById('font-size-input');
+const startHueInput = document.getElementById('start-hue-input');
+const maxHueInput = document.getElementById('max-hue-input');
+const startHueValue = document.getElementById('start-hue-value');
+const maxHueValue = document.getElementById('max-hue-value');
 const prevButton = document.querySelectorAll('.button.is-primary')[0];
 const nextButton = document.querySelectorAll('.button.is-primary')[1];
 const frameDisplay = document.querySelector('.button.is-static');
@@ -25,7 +31,7 @@ const gifOutput = document.getElementById('gif-output');
  */
 async function renderFrame() {
     // Generate SVG for the current frame
-    const svgString = generateFrameSVG(currentFrame, currentText, currentFontMax);
+    const svgString = generateFrameSVG(currentFrame, currentText, currentFontMax, currentStartHueAngle, currentMaxHueDelta);
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -74,6 +80,26 @@ function updateFontSize() {
 }
 
 /**
+ * Update start hue angle from input
+ */
+function updateStartHue() {
+    const value = parseInt(startHueInput.value, 10);
+    currentStartHueAngle = value;
+    startHueValue.textContent = value;
+    renderFrame();
+}
+
+/**
+ * Update max hue delta from input
+ */
+function updateMaxHue() {
+    const value = parseInt(maxHueInput.value, 10);
+    currentMaxHueDelta = value;
+    maxHueValue.textContent = value;
+    renderFrame();
+}
+
+/**
  * Convert SVG string to canvas with ImageData
  */
 async function svgToCanvas(svgString, width = 240, height = 240) {
@@ -111,7 +137,7 @@ async function renderGif() {
 
         // Generate all frames
         for (let i = 0; i < numFrames; i++) {
-            const svgString = generateFrameSVG(i, currentText, currentFontMax);
+            const svgString = generateFrameSVG(i, currentText, currentFontMax, currentStartHueAngle, currentMaxHueDelta);
             const frameCanvas = await svgToCanvas(svgString);
             const frameCtx = frameCanvas.getContext('2d');
             const imageData = frameCtx.getImageData(0, 0, frameCanvas.width, frameCanvas.height);
@@ -181,6 +207,8 @@ prevButton.addEventListener('click', previousFrame);
 nextButton.addEventListener('click', nextFrame);
 textInput.addEventListener('input', updateText);
 fontSizeInput.addEventListener('input', updateFontSize);
+startHueInput.addEventListener('input', updateStartHue);
+maxHueInput.addEventListener('input', updateMaxHue);
 renderGifButton.addEventListener('click', renderGif);
 saveGifButton.addEventListener('click', saveGif); // Added save button listener
 
