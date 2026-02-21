@@ -72,6 +72,9 @@ export function generateFrameSVG(frameIndex, text = "TY", fontMax = DEFAULT_FONT
     const fontMid = fontMin + fontRange;
     const fontSize = fontMid + fontRange * Math.cos((4 * Math.PI * frameIndex) / NUM_FRAMES + Math.PI);
 
+    // Calculate dynamic stroke width relative to font size (5 % of font size)
+    const strokeWidth = fontSize * 0.05;
+
     // Calculate dynamic Y-offset for vertical centering
     const yVisualCenter = 120 + (fontSize * 0.11);
 
@@ -95,6 +98,7 @@ export function generateFrameSVG(frameIndex, text = "TY", fontMax = DEFAULT_FONT
     const textElement = svgDoc.querySelector('text');
     if (textElement) {
         textElement.setAttribute('font-size', `${fontSize}px`);
+        textElement.setAttribute('stroke-width', `${strokeWidth.toFixed(2)}`);
         textElement.setAttribute('y', yVisualCenter.toFixed(2));
         textElement.setAttribute('transform', `rotate(${textAngle.toFixed(2)}, 120, 120)`);
         textElement.textContent = text;
