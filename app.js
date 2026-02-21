@@ -5,6 +5,7 @@ import { generateFrameSVG, getNumFrames } from './rotator.js';
 let currentFrame = 0;
 let currentText = "TY";
 let currentFontMax = 180;
+let gifBlobUrl = null; // Track the generated GIF URL
 
 // Get DOM elements
 const canvas = document.getElementById('frame-canvas');
@@ -15,6 +16,7 @@ const prevButton = document.querySelectorAll('.button.is-primary')[0];
 const nextButton = document.querySelectorAll('.button.is-primary')[1];
 const frameDisplay = document.querySelector('.button.is-static');
 const renderGifButton = document.getElementById('render-gif-button');
+const saveGifButton = document.getElementById('save-gif-button'); // Added save button
 const animationDurationInput = document.getElementById('animation-duration-input');
 const gifOutput = document.getElementById('gif-output');
 
@@ -92,7 +94,14 @@ async function svgToCanvas(svgString, width = 240, height = 240) {
 async function renderGif() {
     renderGifButton.disabled = true;
     renderGifButton.textContent = 'Generating GIF...';
+    saveGifButton.disabled = true; // Disable save button during generation
     gifOutput.innerHTML = '';
+
+    // Clean up previous GIF URL if exists
+    if (gifBlobUrl) {
+        URL.revokeObjectURL(gifBlobUrl);
+        gifBlobUrl = null;
+    }
 
     try {
         const numFrames = getNumFrames();
@@ -134,12 +143,15 @@ async function renderGif() {
         // Create and display GIF
         const buffer = encoder.bytes();
         const blob = new Blob([buffer], { type: 'image/gif' });
-        const url = URL.createObjectURL(blob);
+        gifBlobUrl = URL.createObjectURL(blob);
 
         const img = document.createElement('img');
-        img.src = url;
+        img.src = gifBlobUrl;
         img.style.maxWidth = '500px';
         gifOutput.appendChild(img);
+
+        // Enable save button after GIF is generated
+        saveGifButton.disabled = false;
 
     } catch (error) {
         console.error('Error generating GIF:', error);
@@ -150,12 +162,30 @@ async function renderGif() {
     }
 }
 
+/**
+ * Save the generated GIF
+ */
+function saveGif() {
+    if (gifBlobUrl) {
+        const a = document.createElement('a');
+        a.href = gifBlobUrl;
+        a.download = `thankyou-rotator-${currentText || 'ty'}.gif`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+}
+
 // Set up event listeners
 prevButton.addEventListener('click', previousFrame);
 nextButton.addEventListener('click', nextFrame);
 textInput.addEventListener('input', updateText);
 fontSizeInput.addEventListener('input', updateFontSize);
 renderGifButton.addEventListener('click', renderGif);
+saveGifButton.addEventListener('click', saveGif); // Added save button listener
+
+// Initialize save button as disabled
+saveGifButton.disabled = true;
 
 // Render the initial frame
 renderFrame();
