@@ -7,7 +7,9 @@ const TOTAL_PATTERN_ROTATION = 4 * ROTATION_UNIT;
 const PATTERN_ROTATION_STEP = TOTAL_PATTERN_ROTATION / NUM_FRAMES;
 
 // Hue Rotation
-const HUE_ROTATION_STEP = 360.0 / NUM_FRAMES;
+const MAX_HUE_DELTA = 360.0;
+const HUE_ROTATION_STEP = MAX_HUE_DELTA / NUM_FRAMES;
+const START_HUE_ANGLE = 120.0;
 
 // Text Rotation (Oscillation)
 const TEXT_ROTATION_RANGE = 50.0;
@@ -25,8 +27,8 @@ const BASE_SVG_TEMPLATE = `<?xml version="1.0" encoding="UTF-8"?>
             <feColorMatrix type="hueRotate" values="0" />
         </filter>
         <g id="ab">
-            <path d="M 0 0 L 170 0 A 170 170 0 0 1 105.99 132.91 Z" fill="green"/>
-            <path d="M 0 0 L 170 0 A 170 170 0 0 1 153.16 73.76 Z" fill="darkgreen"/>
+            <path d="M 0 0 L 170 0 A 170 170 0 0 1 105.99 132.91 Z" fill="red"/>
+            <path d="M 0 0 L 170 0 A 170 170 0 0 1 153.16 73.76 Z" fill="darkred"/>
         </g>
     </defs>
     <g id="rotating-pattern" transform="translate(120, 120) rotate(0)">
@@ -63,7 +65,7 @@ const BASE_SVG_TEMPLATE = `<?xml version="1.0" encoding="UTF-8"?>
 export function generateFrameSVG(frameIndex, text = "TY", fontMax = DEFAULT_FONT_MAX) {
     // Calculate angles for this frame
     const patternAngle = frameIndex * PATTERN_ROTATION_STEP;
-    const hueAngle = frameIndex * HUE_ROTATION_STEP;
+    const hueAngle = frameIndex * HUE_ROTATION_STEP + START_HUE_ANGLE;
     const textAngle = 25.0 * Math.sin((2 * Math.PI * frameIndex) / NUM_FRAMES - (Math.PI / 2));
 
     // Calculate dynamic font size based on provided max
