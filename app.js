@@ -97,6 +97,8 @@ async function renderGif() {
     try {
         const numFrames = getNumFrames();
         const frames = [];
+        const animationDuration = parseInt(animationDurationInput.value, 10) || 2000;
+        const frameDuration = Math.round(animationDuration / numFrames);
 
         // Generate all frames
         for (let i = 0; i < numFrames; i++) {
@@ -124,7 +126,7 @@ async function renderGif() {
         // Encode frames
         for (let i = 0; i < frames.length; i++) {
             const indexed = applyPalette(frames[i], palette);
-            encoder.writeFrame(indexed, 240, 240, { delay: 100, palette });
+            encoder.writeFrame(indexed, 240, 240, { delay: frameDuration, palette });
         }
 
         encoder.finish();
